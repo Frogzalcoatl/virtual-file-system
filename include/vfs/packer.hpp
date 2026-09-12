@@ -7,9 +7,9 @@
 // Many new concepts learned please let me know if AI led me astray.
 
 // WVFS backwards. (W Virtual File System) [hopefully itll be a W]
-#define PackMagic 0x53465657
+#define PACK_MAGIC 0x53465657
 
-constexpr uint64_t stringHash(std::string_view str) {
+constexpr uint64_t string_hash(std::string_view str) {
     uint64_t hash = 14695981039346656037ULL;
     for (char c : str) {
         hash ^= static_cast<unsigned char>(c);
@@ -22,8 +22,8 @@ constexpr uint64_t stringHash(std::string_view str) {
 struct VFS_Header {
     uint32_t magic;
     char version[16];
-    uint32_t fileCount;
-    uint32_t _pad;
+    uint32_t file_count;
+    uint32_t pad;
 };
 
 struct VFS_Entry {

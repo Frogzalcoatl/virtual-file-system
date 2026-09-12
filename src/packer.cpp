@@ -7,11 +7,10 @@
 #include <vector>
 #include <vfs/packer.hpp>
 
-
 struct PackerTask {
     VFS_Entry entry;
-    std::string systemPath;
-    std::string relativePath;
+    std::string system_path;
+    std::string relative_path;
 };
 
 int main(int argc, char* argv[]) {
@@ -30,15 +29,15 @@ int main(int argc, char* argv[]) {
     for (const auto& entry : std::filesystem::recursive_directory_iterator(inputPath)) {
         if (entry.is_regular_file()) {
             PackerTask task;
-            task.systemPath = entry.path().string();
+            task.system_path = entry.path().string();
             std::filesystem::path relativePath = std::filesystem::relative(entry.path(), inputPath);
-            task.relativePath =
+            task.relative_path =
                 relativePath.generic_string(); // Forces "/" on all operating systems
-            task.entry.id = stringHash(task.relativePath);
+            task.entry.id = string_hash(task.relative_path);
             task.entry.size = entry.file_size();
             task.entry.offset = 0; // Computed after sorting
-            std::cout << "Found asset: " << task.relativePath << "(" << task.entry.size << " bytes)"
-                      << std::endl;
+            std::cout << "Found asset: " << task.relative_path << "(" << task.entry.size
+                      << " bytes)" << std::endl;
             tasks.push_back(task);
         }
     }
@@ -61,20 +60,20 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     VFS_Header header;
-    header.magic = PackMagic;
+    header.magic = PACK_MAGIC;
     std::memset(header.version, 0, sizeof(header.version));
     size_t copyLength = std::min(versionArg.size(), sizeof(header.version) - 1);
     std::copy_n(versionArg.begin(), copyLength, header.version);
-    header.fileCount = static_cast<uint32_t>(fileCount);
-    header._pad = 0;
+    header.file_count = static_cast<uint32_t>(fileCount);
+    header.pad = 0;
     outputFile.write(reinterpret_cast<const char*>(&header), sizeof(VFS_Header));
     for (size_t i = 0; i < fileCount; i++) {
         outputFile.write(reinterpret_cast<const char*>(&tasks[i].entry), sizeof(VFS_Entry));
     }
     for (size_t i = 0; i < fileCount; i++) {
-        std::ifstream asset(tasks[i].systemPath, std::ios::binary);
+        std::ifstream asset(tasks[i].system_path, std::ios::binary);
         if (!asset.is_open()) {
-            std::cout << "Error: Could not open asset file " << tasks[i].systemPath << std::endl;
+            std::cout << "Error: Could not open asset file " << tasks[i].system_path << std::endl;
             return 1;
         }
         std::vector<std::byte> buffer(tasks[i].entry.size);
