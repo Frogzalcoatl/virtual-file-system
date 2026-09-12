@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://json.schemastore.org/clang-format.json
+BasedOnStyle: LLVM
+IndentWidth: 4
+
+BreakBeforeBraces: Attach
+ColumnLimit: 100
+PointerAlignment: Left
+AlignAfterOpenBracket: BlockIndent
+Cpp11BracedListStyle: true
+BreakStringLiterals: false
+BinPackArguments: false
+BinPackParameters: OnePerLine
+AllowShortFunctionsOnASingleLine: None
+AllowShortEnumsOnASingleLine: false
+FixNamespaceComments: false
