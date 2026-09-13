@@ -9,15 +9,6 @@
 // WVFS backwards. (W Virtual File System) [hopefully itll be a W]
 #define PACK_MAGIC 0x53465657
 
-constexpr uint64_t string_hash(std::string_view str) {
-    uint64_t hash = 14695981039346656037ULL;
-    for (char c : str) {
-        hash ^= static_cast<unsigned char>(c);
-        hash *= 1099511628211ULL;
-    }
-    return hash;
-}
-
 #pragma pack(push, 1) // Force 1-byte alignment (no padding) in the below structs
 struct VFS_Header {
     uint32_t magic;
@@ -32,3 +23,24 @@ struct VFS_Entry {
     uint64_t size;
 };
 #pragma pack(pop)
+
+#ifdef __cplusplus
+#include <string_view>
+constexpr uint64_t string_hash(std::string_view str) {
+    uint64_t hash = 14695981039346656037ULL;
+    for (char c : str) {
+        hash ^= static_cast<unsigned char>(c);
+        hash *= 1099511628211ULL;
+    }
+    return hash;
+}
+#else
+static inline uint64_t string_hash(const char* str) {
+    uint64_t hash = 14695981039346656037ULL;
+    while (*str) {
+        hash ^= (unsigned char)(*str++);
+        hash *= 1099511628211ULL;
+    }
+    return hash;
+}
+#endif

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(VirtualFileSystem
     VERSION 1.0.0
-    LANGUAGES CXX
+    LANGUAGES C CXX
     DESCRIPTION "A small virtual file system and asset packing tool."
 )
 
@@ -15,6 +15,7 @@ option(VFS_USE_SDL "Enabled SDL3 support for VFS" ON)
 
 add_library(VirtualFileSystem STATIC
     src/vfs.cpp
+    src/vfs_c.cpp
 )
 add_library(vfs::vfs ALIAS VirtualFileSystem)
 
@@ -93,10 +94,6 @@ if(PROJECT_IS_TOP_LEVEL)
         COMMENT "Copying test assets next to vfs_test executable..."
     )
 
-    # -------------------------------------------------------------
-    # Test 1: Packer CLI
-    # Packs tests/assets into a test.dat located next to vfs_test
-    # -------------------------------------------------------------
     add_test(
         NAME 1_TestPackerCLI
         COMMAND $<TARGET_FILE:Packer>
@@ -105,19 +102,11 @@ if(PROJECT_IS_TOP_LEVEL)
                 "1.0.0"
     )
 
-    # -------------------------------------------------------------
-    # Test 2: VFS Folder Mode (Without .dat)
-    # Reads purely from the copied assets/ folder
-    # -------------------------------------------------------------
     add_test(
         NAME 2_TestVFS_FolderMode
         COMMAND vfs_test folder
     )
-
-    # -------------------------------------------------------------
-    # Test 3: VFS Pack Mode (With .dat)
-    # Reads purely from test.dat (folder ignored)
-    # -------------------------------------------------------------
+    
     add_test(
         NAME 3_TestVFS_PackMode
         COMMAND vfs_test pack
